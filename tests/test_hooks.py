@@ -2,7 +2,7 @@ import sys
 
 import toml
 
-from tox_pdm import tox_testenv_install_deps, tox_runtest
+from tox_pdm import tox_testenv_install_deps
 
 
 def test_tox_install_deps(venv, action):
