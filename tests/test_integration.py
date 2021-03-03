@@ -1,7 +1,6 @@
 import textwrap
 
 import py.path
-import toml
 from tox.session import setup_reporter, load_config, set_os_env_var, build_session
 
 FIX_PROJECT = py.path.local(__file__).dirpath("fixture-project")
@@ -43,8 +42,3 @@ def test_install_conditional_deps(tmpdir):
         assert exit_code == 0
 
     assert tmpdir.join(".tox/.package/demo-0.1.0.tar.gz").exists()
-
-    data = toml.loads(tmpdir.join(".tox/django2/pyproject.toml").read_text("UTF-8"))
-    assert data["project"]["optional-dependencies"]["__tox__"] == ["Django~=2.0"]
-    data = toml.loads(tmpdir.join(".tox/django3/pyproject.toml").read_text("UTF-8"))
-    assert data["project"]["optional-dependencies"]["__tox__"] == ["Django~=3.0"]

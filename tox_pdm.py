@@ -80,14 +80,6 @@ def tox_package(session: session.Session, venv: venv.VirtualEnv) -> Any:
 def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> Any:
     _clone_pdm_files(venv)
     sections = venv.envconfig.sections or []
-    deps = venv.envconfig.deps
-    if deps:
-        old_pyproject = toml.loads(venv.path.join("pyproject.toml").read())
-        old_pyproject["project"].setdefault("optional-dependencies", {})["__tox__"] = [
-            str(dep) for dep in deps
-        ]
-        venv.path.join("pyproject.toml").write(toml.dumps(old_pyproject))
-        sections.append("__tox__")
 
     args = [sys.executable, "-m", "pdm", "install", "-p", str(venv.path)]
     if "default" in sections:
@@ -101,13 +93,3 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
         venv=True,
         action=action,
     )
-    return True
-
-
-@hookimpl
-def tox_runenvreport(venv: venv.VirtualEnv, action: action.Action) -> Any:
-    args = [sys.executable, "-m", "pdm", "list", "-p", str(venv.path), "--graph"]
-    output = venv._pcall(
-        args, cwd=venv.envconfig.config.toxinidir, venv=True, action=action
-    )
-    return output.splitlines()

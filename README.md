@@ -32,7 +32,7 @@ isolated_build = true ; IMPORTANT, projects that are built by PEP 517 must turn 
 sections =  ; Dependency sections in pyproject.toml
     dev
     test
-deps =      ; Additional dependencies, it will involve extra building time for dependency resolution.
+deps =      ; Additional dependencies, it will be installed into the venv via normal pip method
     flake8
 commands =
     pytest test/
@@ -44,4 +44,3 @@ A real-world example can be found at this repository's [tox.ini](/tox.ini) and [
 
 1. `isolated_build` must be set to `true` otherwise environments will fail to setup.
 2. Make sure you have generated `pdm.lock` before running the test, it will greatly accelerate the testing.
-3. Only write `deps` when you really need dynamic dependency injection, as it will lead to relock when building the environment.

@@ -14,6 +14,7 @@ class MockEnvConfig:
         self.config = MockConfig()
         self.deps = []
         self.sections = []
+        self.commands = []
 
 
 class MockVenv:
@@ -21,6 +22,10 @@ class MockVenv:
         self.path = path
         self.envconfig = MockEnvConfig()
         self._pcall = mock.Mock()
+        self._install = mock.Mock()
+
+    def get_resolved_dependencies(self):
+        return self.envconfig.deps
 
 
 @pytest.fixture
