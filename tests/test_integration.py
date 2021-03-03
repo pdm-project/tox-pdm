@@ -45,6 +45,6 @@ def test_install_conditional_deps(tmpdir):
     assert tmpdir.join(".tox/.package/demo-0.1.0.tar.gz").exists()
 
     data = toml.loads(tmpdir.join(".tox/django2/pyproject.toml").read_text("UTF-8"))
-    assert data["project"]["optional-dependencies"]["__tox__"] == "Django~=2.0"
+    assert data["project"]["optional-dependencies"]["__tox__"] == ["Django~=2.0"]
     data = toml.loads(tmpdir.join(".tox/django3/pyproject.toml").read_text("UTF-8"))
-    assert data["project"]["optional-dependencies"]["__tox__"] == "Django~=3.0"
+    assert data["project"]["optional-dependencies"]["__tox__"] == ["Django~=3.0"]
