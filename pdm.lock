@@ -1,6 +1,6 @@
 [[package]]
 name = "appdirs"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "1.4.4"
 summary = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 
@@ -13,19 +13,19 @@ summary = "Atomic file writes."
 
 [[package]]
 name = "attrs"
-sections = ["default", "dev", "test"]
+sections = ["default", "test"]
 version = "20.3.0"
 summary = "Classes Without Boilerplate"
 
 [[package]]
 name = "cached-property"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "1.5.2"
 summary = "A decorator for caching properties in classes."
 
 [[package]]
 name = "cffi"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "1.14.5"
 marker = "sys_platform == 'linux'"
 summary = "Foreign Function Interface for Python calling C code."
@@ -35,13 +35,13 @@ dependencies = [
 
 [[package]]
 name = "click"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "7.1.2"
 summary = "Composable command line interface toolkit"
 
 [[package]]
 name = "colorama"
-sections = ["default", "dev", "test"]
+sections = ["default", "test"]
 version = "0.4.4"
 summary = "Cross-platform colored terminal text."
 
@@ -53,7 +53,7 @@ summary = "Code coverage measurement for Python"
 
 [[package]]
 name = "cryptography"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "3.4.6"
 marker = "sys_platform == 'linux'"
 summary = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
@@ -63,7 +63,7 @@ dependencies = [
 
 [[package]]
 name = "distlib"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "0.3.1"
 summary = "Distribution utilities"
 
@@ -87,7 +87,7 @@ dependencies = [
 
 [[package]]
 name = "importlib-metadata"
-sections = ["default", "dev", "lint", "test"]
+sections = ["default", "lint", "test"]
 version = "3.7.0"
 marker = "python_version < '3.8'"
 summary = "Read metadata from Python packages"
@@ -104,14 +104,14 @@ summary = "iniconfig: brain-dead simple config-ini parsing"
 
 [[package]]
 name = "jeepney"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "0.6.0"
 marker = "sys_platform == 'linux'"
 summary = "Low-level, pure Python DBus protocol wrapper."
 
 [[package]]
 name = "keyring"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "22.3.0"
 summary = "Store and access your passwords safely."
 dependencies = [
@@ -129,7 +129,7 @@ summary = "McCabe checker, plugin for flake8"
 
 [[package]]
 name = "packaging"
-sections = ["default", "dev", "test"]
+sections = ["default", "test"]
 version = "20.9"
 summary = "Core utilities for Python packages"
 dependencies = [
@@ -138,15 +138,16 @@ dependencies = [
 
 [[package]]
 name = "pdm"
-sections = ["default", "dev"]
-version = "1.3.5.dev10+g4877224.d20210302"
-editable = true
-path = "D:/Workspace/pdm"
+sections = ["default"]
+version = "1.3.5.dev15+g4cd9aa2"
+url = "git+https://github.com/frostming/pdm.git@master"
 summary = "Python Development Master"
 dependencies = [
     "appdirs",
     "click",
     "distlib",
+    "importlib-metadata; python_version < \"3.8\"",
+    "keyring",
     "pdm-pep517<1.0.0,>=0.3.0",
     "pep517",
     "pip>=20.1",
@@ -158,19 +159,17 @@ dependencies = [
     "shellingham<2.0.0,>=1.3.2",
     "tomlkit",
     "wheel<1.0.0,>=0.36.2",
-    "keyring",
-    "importlib-metadata; python_version < \"3.8\"",
 ]
 
 [[package]]
 name = "pdm-pep517"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "0.5.6"
 summary = "PEP 517 support"
 
 [[package]]
 name = "pep517"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "0.9.1"
 summary = "Wrappers to build Python packages using PEP 517 hooks"
 dependencies = [
@@ -181,7 +180,7 @@ dependencies = [
 
 [[package]]
 name = "pip"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "21.0.1"
 summary = "The PyPA recommended tool for installing Python packages."
 
@@ -208,13 +207,13 @@ summary = "Python style guide checker"
 
 [[package]]
 name = "pycomplete"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "0.3.2"
 summary = "A Python library to generate static completion scripts for your CLI app"
 
 [[package]]
 name = "pycparser"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "2.20"
 marker = "sys_platform == 'linux'"
 summary = "C parser in Python"
@@ -227,7 +226,7 @@ summary = "passive checker of Python programs"
 
 [[package]]
 name = "pyparsing"
-sections = ["default", "dev", "test"]
+sections = ["default", "test"]
 version = "2.4.7"
 summary = "Python parsing module"
 
@@ -250,7 +249,7 @@ dependencies = [
 
 [[package]]
 name = "python-cfonts"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "1.4.0"
 summary = "Sexy fonts for the console"
 dependencies = [
@@ -259,13 +258,13 @@ dependencies = [
 
 [[package]]
 name = "python-dotenv"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "0.15.0"
 summary = "Add .env support to your django/flask apps in development and deployments"
 
 [[package]]
 name = "pythonfinder"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "1.2.5"
 summary = "A cross-platform python discovery tool to help locate python on any system."
 dependencies = [
@@ -278,20 +277,20 @@ dependencies = [
 
 [[package]]
 name = "pywin32-ctypes"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "0.2.0"
 marker = "sys_platform == 'win32'"
 summary = "UNKNOWN"
 
 [[package]]
 name = "resolvelib"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "0.5.4"
 summary = "Resolve abstract dependencies into concrete ones"
 
 [[package]]
 name = "SecretStorage"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "3.3.1"
 marker = "sys_platform == 'linux'"
 summary = "Python bindings to FreeDesktop.org Secret Service API"
@@ -302,25 +301,25 @@ dependencies = [
 
 [[package]]
 name = "shellingham"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "1.4.0"
 summary = "Tool to Detect Surrounding Shell"
 
 [[package]]
 name = "six"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "1.15.0"
 summary = "Python 2 and 3 compatibility utilities"
 
 [[package]]
 name = "toml"
-sections = ["default", "dev", "test"]
+sections = ["default", "test"]
 version = "0.10.2"
 summary = "Python Library for Tom's Obvious, Minimal Language"
 
 [[package]]
 name = "tomlkit"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "0.7.0"
 summary = "Style preserving TOML library"
 
@@ -343,7 +342,7 @@ dependencies = [
 
 [[package]]
 name = "typing-extensions"
-sections = ["default", "dev", "lint", "test"]
+sections = ["default", "lint", "test"]
 version = "3.7.4.3"
 marker = "python_version < '3.8'"
 summary = "Backported and Experimental Type Hints for Python 3.5+"
@@ -363,20 +362,20 @@ dependencies = [
 
 [[package]]
 name = "wheel"
-sections = ["default", "dev"]
+sections = ["default"]
 version = "0.36.2"
 summary = "A built-package format for Python"
 
 [[package]]
 name = "zipp"
-sections = ["default", "dev", "lint", "test"]
+sections = ["default", "lint", "test"]
 version = "3.4.0"
 marker = "python_version < '3.8'"
 summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "2"
-content_hash = "sha256:c6360f32e30dea0875fe3d014a6f4793de2d4d460799597fb33d5fd3cfd480b5"
+content_hash = "sha256:3064ec176b14013095270e89f0dd56a8005e5895cabd0ea80c8a84b19a3365cf"
 
 [metadata.files]
 "appdirs 1.4.4" = [

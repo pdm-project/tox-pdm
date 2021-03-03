@@ -5,13 +5,16 @@ description = "A plugin for tox that utilizes PDM as the package manager and ins
 authors = [
     {name = "Frost Ming", email = "mianghong@gmail.com"},
 ]
-dependencies = ["tox>=3.8.0", "pdm"]
+dependencies = [
+    "tox>=3.8.0",
+    "pdm @ git+https://github.com/frostming/pdm.git@master",
+]
 dev-dependencies = [
-    "-e file:///D:/Workspace/pdm#egg=pdm",
+    
 ]
 includes = ["tox_pdm.py"]
 requires-python = ">=3.7"
-dynamic = ["classifiers"]
+dynamic = ["classifiers", "version"]
 license = {text = "MIT"}
 readme = "README.md"
 keywords = ["tox", "testing"]
