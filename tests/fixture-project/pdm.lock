@@ -1,0 +1,145 @@
+[[package]]
+name = "certifi"
+sections = ["default"]
+version = "2020.12.5"
+summary = "Python package for providing Mozilla's CA Bundle."
+
+[[package]]
+name = "chardet"
+sections = ["default"]
+version = "4.0.0"
+summary = "Universal encoding detector for Python 2 and 3"
+
+[[package]]
+name = "flake8"
+sections = ["lint"]
+version = "3.8.4"
+summary = "the modular source code checker: pep8 pyflakes and co"
+dependencies = [
+    "pyflakes<2.3.0,>=2.2.0",
+    "pycodestyle<2.7.0,>=2.6.0a1",
+    "mccabe<0.7.0,>=0.6.0",
+    "importlib-metadata; python_version < \"3.8\"",
+]
+
+[[package]]
+name = "idna"
+sections = ["default"]
+version = "2.10"
+summary = "Internationalized Domain Names in Applications (IDNA)"
+
+[[package]]
+name = "importlib-metadata"
+sections = ["lint"]
+version = "3.7.0"
+marker = "python_version < '3.8'"
+summary = "Read metadata from Python packages"
+dependencies = [
+    "zipp>=0.5",
+    "typing-extensions>=3.6.4; python_version < \"3.8\"",
+]
+
+[[package]]
+name = "mccabe"
+sections = ["lint"]
+version = "0.6.1"
+summary = "McCabe checker, plugin for flake8"
+
+[[package]]
+name = "pycodestyle"
+sections = ["lint"]
+version = "2.6.0"
+summary = "Python style guide checker"
+
+[[package]]
+name = "pyflakes"
+sections = ["lint"]
+version = "2.2.0"
+summary = "passive checker of Python programs"
+
+[[package]]
+name = "requests"
+sections = ["default"]
+version = "2.25.1"
+summary = "Python HTTP for Humans."
+dependencies = [
+    "chardet<5,>=3.0.2",
+    "idna<3,>=2.5",
+    "urllib3<1.27,>=1.21.1",
+    "certifi>=2017.4.17",
+]
+
+[[package]]
+name = "typing-extensions"
+sections = ["lint"]
+version = "3.7.4.3"
+marker = "python_version < '3.8'"
+summary = "Backported and Experimental Type Hints for Python 3.5+"
+
+[[package]]
+name = "urllib3"
+sections = ["default"]
+version = "1.26.3"
+summary = "HTTP library with thread-safe connection pooling, file post, and more."
+
+[[package]]
+name = "zipp"
+sections = ["lint"]
+version = "3.4.0"
+marker = "python_version < '3.8'"
+summary = "Backport of pathlib-compatible object wrapper for zip files"
+
+[metadata]
+lock_version = "2"
+content_hash = "sha256:931883c6ca49ea07b0c80a880ee7ae71d39c707b520a0ecf919cc31ef7760e49"
+
+[metadata.files]
+"certifi 2020.12.5" = [
+    {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
+    {file = "certifi-2020.12.5.tar.gz", hash = "sha256:1a4995114262bffbc2413b159f2a1a480c969de6e6eb13ee966d470af86af59c"},
+]
+"chardet 4.0.0" = [
+    {file = "chardet-4.0.0-py2.py3-none-any.whl", hash = "sha256:f864054d66fd9118f2e67044ac8981a54775ec5b67aed0441892edb553d21da5"},
+    {file = "chardet-4.0.0.tar.gz", hash = "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa"},
+]
+"flake8 3.8.4" = [
+    {file = "flake8-3.8.4-py2.py3-none-any.whl", hash = "sha256:749dbbd6bfd0cf1318af27bf97a14e28e5ff548ef8e5b1566ccfb25a11e7c839"},
+    {file = "flake8-3.8.4.tar.gz", hash = "sha256:aadae8761ec651813c24be05c6f7b4680857ef6afaae4651a4eccaef97ce6c3b"},
+]
+"idna 2.10" = [
+    {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
+    {file = "idna-2.10.tar.gz", hash = "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6"},
+]
+"importlib-metadata 3.7.0" = [
+    {file = "importlib_metadata-3.7.0-py3-none-any.whl", hash = "sha256:c6af5dbf1126cd959c4a8d8efd61d4d3c83bddb0459a17e554284a077574b614"},
+    {file = "importlib_metadata-3.7.0.tar.gz", hash = "sha256:24499ffde1b80be08284100393955842be4a59c7c16bbf2738aad0e464a8e0aa"},
+]
+"mccabe 0.6.1" = [
+    {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},
+    {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
+]
+"pycodestyle 2.6.0" = [
+    {file = "pycodestyle-2.6.0-py2.py3-none-any.whl", hash = "sha256:2295e7b2f6b5bd100585ebcb1f616591b652db8a741695b3d8f5d28bdc934367"},
+    {file = "pycodestyle-2.6.0.tar.gz", hash = "sha256:c58a7d2815e0e8d7972bf1803331fb0152f867bd89adf8a01dfd55085434192e"},
+]
+"pyflakes 2.2.0" = [
+    {file = "pyflakes-2.2.0-py2.py3-none-any.whl", hash = "sha256:0d94e0e05a19e57a99444b6ddcf9a6eb2e5c68d3ca1e98e90707af8152c90a92"},
+    {file = "pyflakes-2.2.0.tar.gz", hash = "sha256:35b2d75ee967ea93b55750aa9edbbf72813e06a66ba54438df2cfac9e3c27fc8"},
+]
+"requests 2.25.1" = [
+    {file = "requests-2.25.1-py2.py3-none-any.whl", hash = "sha256:c210084e36a42ae6b9219e00e48287def368a26d03a048ddad7bfee44f75871e"},
+    {file = "requests-2.25.1.tar.gz", hash = "sha256:27973dd4a904a4f13b263a19c866c13b92a39ed1c964655f025f3f8d3d75b804"},
+]
+"typing-extensions 3.7.4.3" = [
+    {file = "typing_extensions-3.7.4.3-py2-none-any.whl", hash = "sha256:dafc7639cde7f1b6e1acc0f457842a83e722ccca8eef5270af2d74792619a89f"},
+    {file = "typing_extensions-3.7.4.3-py3-none-any.whl", hash = "sha256:7cb407020f00f7bfc3cb3e7881628838e69d8f3fcab2f64742a5e76b2f841918"},
+    {file = "typing_extensions-3.7.4.3.tar.gz", hash = "sha256:99d4073b617d30288f569d3f13d2bd7548c3a7e4c8de87db09a9d29bb3a4a60c"},
+]
+"urllib3 1.26.3" = [
+    {file = "urllib3-1.26.3-py2.py3-none-any.whl", hash = "sha256:1b465e494e3e0d8939b50680403e3aedaa2bc434b7d5af64dfd3c958d7f5ae80"},
+    {file = "urllib3-1.26.3.tar.gz", hash = "sha256:de3eedaad74a2683334e282005cd8d7f22f4d55fa690a2a1020a416cb0a47e73"},
+]
+"zipp 3.4.0" = [
+    {file = "zipp-3.4.0-py3-none-any.whl", hash = "sha256:102c24ef8f171fd729d46599845e95c7ab894a4cf45f5de11a44cc7444fb1108"},
+    {file = "zipp-3.4.0.tar.gz", hash = "sha256:ed5eee1974372595f9e416cc7bbeeb12335201d8081ca8a0743c954d4446e5cb"},
+]

@@ -88,9 +88,6 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
         venv.path.join("pyproject.toml").write(toml.dumps(old_pyproject))
         sections.append("__tox__")
 
-    if not sections:
-        return True
-
     args = [sys.executable, "-m", "pdm", "install", "-p", str(venv.path)]
     if "default" in sections:
         sections.remove("default")
@@ -102,7 +99,6 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
         cwd=venv.envconfig.config.toxinidir,
         venv=True,
         action=action,
-        redirect=True,
     )
     return True
 
