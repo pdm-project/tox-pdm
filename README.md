@@ -39,3 +39,9 @@ commands =
 ```
 
 A real-world example can be found at this repository's [tox.ini](/tox.ini) and [GitHub Action workflow](/.github/workflows/ci.yml).
+
+## Some best practices:
+
+1. `isolated_build` must be set to `true` otherwise environments will fail to setup.
+2. Make sure you have generated `pdm.lock` before running the test, it will greatly accelerate the testing.
+3. Only write `deps` when you really need dynamic dependency injection, as it will lead to relock when building the environment.

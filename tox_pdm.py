@@ -23,7 +23,8 @@ def _clone_pdm_files(venv: venv.VirtualEnv) -> None:
     with venv.path.join("pyproject.toml").open("w", ensure=True) as f:
         toml.dump(old_pyproject, f)
 
-    project_root.join("pdm.lock").copy(venv.path.join("pdm.lock"))
+    if project_root.join("pdm.lock").exists():
+        project_root.join("pdm.lock").copy(venv.path.join("pdm.lock"))
     with venv.path.join(".pdm.toml").open("w") as f:
         toml.dump({"use_venv": True}, f)
 
