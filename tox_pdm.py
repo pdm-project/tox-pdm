@@ -1,4 +1,3 @@
-import os
 import sys
 from typing import Any, Tuple
 
@@ -8,7 +7,6 @@ from pdm.models.builders import EnvBuilder
 from pdm.project import Project
 from tox import action
 from tox import config
-from tox import exception
 from tox import hookimpl
 from tox import reporter
 from tox import session
@@ -26,6 +24,8 @@ def _clone_pdm_files(venv: venv.VirtualEnv) -> None:
         toml.dump(old_pyproject, f)
 
     project_root.join("pdm.lock").copy(venv.path.join("pdm.lock"))
+    with venv.path.join(".pdm.toml").open("w") as f:
+        toml.dump({"use_venv": True}, f)
 
 
 @hookimpl
@@ -76,27 +76,8 @@ def tox_package(session: session.Session, venv: venv.VirtualEnv) -> Any:
 
 
 @hookimpl
-def tox_testenv_create(venv: venv.VirtualEnv, action: action.Action) -> Any:
-    venv_path = venv.path
-    venv_path.ensure(dir=1)
-    _clone_pdm_files(venv)
-    # Install to local __pypackages__ folder
-    venv.envconfig.install_command.extend(
-        ["-t", str(Project(venv.path).environment.packages_path / "lib")]
-    )
-
-    config_interpreter = venv.getsupportedinterpreter()
-    venv._pcall(
-        [sys.executable, "-m", "pdm", "use", "-f", config_interpreter],
-        cwd=venv_path,
-        venv=False,
-        action=action,
-    )
-    return True
-
-
-@hookimpl
 def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> Any:
+    _clone_pdm_files(venv)
     sections = venv.envconfig.sections or []
     deps = venv.envconfig.deps
     if deps:
@@ -116,7 +97,13 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
     action.setactivity("installdeps", sections)
     for section in sections:
         args.extend(["-s", section])
-    venv._pcall(args, cwd=venv.envconfig.config.toxinidir, venv=False, action=action)
+    venv._pcall(
+        args,
+        cwd=venv.envconfig.config.toxinidir,
+        venv=True,
+        action=action,
+        redirect=True,
+    )
     return True
 
 
@@ -124,57 +111,6 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
 def tox_runenvreport(venv: venv.VirtualEnv, action: action.Action) -> Any:
     args = [sys.executable, "-m", "pdm", "list", "-p", str(venv.path), "--graph"]
     output = venv._pcall(
-        args, cwd=venv.envconfig.config.toxinidir, venv=False, action=action
+        args, cwd=venv.envconfig.config.toxinidir, venv=True, action=action
     )
     return output.splitlines()
-
-
-@hookimpl
-def tox_runtest(venv, redirect):
-    action = venv.new_action("runtests")
-    action.setactivity("runtests", "PYTHONHASHSEED=%r" % os.getenv("PYTHONHASHSEED"))
-    for i, argv in enumerate(venv.envconfig.commands):
-        # have to make strings as _pcall changes argv[0] to a local()
-        # happens if the same environment is invoked twice
-        cwd = venv.envconfig.changedir
-        message = "commands[%s] | %s" % (i, " ".join([str(x) for x in argv]))
-        action.setactivity("runtests", message)
-        # check to see if we need to ignore the return code
-        # if so, we need to alter the command line arguments
-        if argv[0].startswith("-"):
-            ignore_ret = True
-            if argv[0] == "-":
-                del argv[0]
-            else:
-                argv[0] = argv[0].lstrip("-")
-        else:
-            ignore_ret = False
-        args = [sys.executable, "-m", "pdm", "run", "-p", venv.path] + argv
-        try:
-            venv._pcall(
-                args,
-                venv=False,
-                cwd=cwd,
-                action=action,
-                redirect=redirect,
-                ignore_ret=ignore_ret,
-            )
-        except exception.InvocationError as err:
-            if venv.envconfig.ignore_outcome:
-                reporter.warning(
-                    "command failed but result from testenv is ignored\n"
-                    "  cmd: %s" % (str(err),)
-                )
-                venv.status = "ignored failed command"
-                continue  # keep processing commands
-
-            reporter.error(str(err))
-            venv.status = "commands failed"
-            if not venv.envconfig.ignore_errors:
-                break  # Don't process remaining commands
-        except KeyboardInterrupt:
-            venv.status = "keyboardinterrupt"
-            reporter.error(venv.status)
-            raise
-
-    return True
