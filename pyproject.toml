@@ -1,0 +1,33 @@
+[project]
+name = "tox-pdm"
+version = "0.1.0"
+description = "A plugin for tox that utilizes PDM as the package manager and installer"
+authors = [
+    {name = "Frost Ming", email = "mianghong@gmail.com"},
+]
+dependencies = ["tox>=3.8.0", "pdm"]
+dev-dependencies = [
+    "-e file:///D:/Workspace/pdm#egg=pdm",
+]
+includes = ["tox_pdm.py"]
+requires-python = ">=3.7"
+dynamic = ["classifiers"]
+license = {text = "MIT"}
+
+[project.urls]
+homepage = "https://github.com/pdm-project/tox-pdm"
+
+[project.entry-points.tox]
+pdm = "tox_pdm"
+
+
+[project.optional-dependencies]
+test = [
+    "pytest~=6.2",
+]
+[build-system]
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"
+
+[tool]
+[tool.pdm]

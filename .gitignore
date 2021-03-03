@@ -1,0 +1,9 @@
+__pypackages__/
+__pycache__/
+*.py[cod]
+.pdm.toml
+*.egg-info/
+dist/
+build/
+.vscode/
+.tox/
