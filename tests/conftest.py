@@ -1,7 +1,10 @@
+import sys
 from unittest import mock
 
 import py
 import pytest
+
+FIX_PROJECT = py.path.local(__file__).dirpath("fixture-project")
 
 
 class MockConfig:
@@ -15,6 +18,11 @@ class MockEnvConfig:
         self.deps = []
         self.sections = []
         self.commands = []
+        self.install_command = []
+        self.commands_pre = []
+        self.commands_post = []
+        self.skip_install = False
+        self.list_dependencies_command = ["python", "-m", "pip", "freeze"]
 
 
 class MockVenv:
@@ -24,8 +32,14 @@ class MockVenv:
         self._pcall = mock.Mock()
         self._install = mock.Mock()
 
+        for filename in ("demo.py", "pdm.lock", "pyproject.toml"):
+            FIX_PROJECT.join(filename).copy(path.join(filename))
+
     def get_resolved_dependencies(self):
         return self.envconfig.deps
+
+    def getsupportedinterpreter(self):
+        return sys.executable
 
 
 @pytest.fixture

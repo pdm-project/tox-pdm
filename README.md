@@ -26,13 +26,12 @@ The following simple example installs `dev` and `test` dependencies into the ven
 ```ini
 [tox]
 envlist = py37,py38
-isolated_build = true ; IMPORTANT, projects that are built by PEP 517 must turn on this flag.
 
 [testenv]
 sections =  ; Dependency sections in pyproject.toml
     dev
     test
-deps =      ; Additional dependencies, it will be installed into the venv via normal pip method
+deps =      ; Additional dependencies, it will be installed into the library path via normal pip method
     flake8
 commands =
     pytest test/
@@ -42,5 +41,5 @@ A real-world example can be found at this repository's [tox.ini](/tox.ini) and [
 
 ## Some best practices:
 
-1. `isolated_build` must be set to `true` otherwise environments will fail to setup.
-2. Make sure you have generated `pdm.lock` before running the test, it will greatly accelerate the testing.
+1. Make sure you have generated `pdm.lock` before running the test, it will greatly accelerate the testing.
+2. If you don't set `skip_install = true`, the current package will be built and installed into the testing environment together with the `dependencies` from `pyproject.toml`.
