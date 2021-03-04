@@ -1,5 +1,6 @@
 import inspect
 import os
+import shutil
 import sys
 from typing import Any, List, Tuple
 
@@ -136,23 +137,36 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
     venv.envconfig.install_command.extend(
         ["-t", str(Project(venv.path).environment.packages_path / "lib")]
     )
-    if venv.envconfig.skip_install and not sections:
-        return
+    if not venv.envconfig.skip_install or sections:
+        action.setactivity("pdminstall", sections)
+        args = [sys.executable, "-m", "pdm", "install", "-p", str(venv.path)]
+        if "default" in sections:
+            sections.remove("default")
+        elif venv.envconfig.skip_install:
+            args.append("--no-default")
+        for section in sections:
+            args.extend(["-s", section])
+        venv._pcall(
+            args,
+            cwd=venv.envconfig.config.toxinidir,
+            venv=False,
+            action=action,
+        )
 
-    action.setactivity("pdminstall", sections)
-    args = [sys.executable, "-m", "pdm", "install", "-p", str(venv.path)]
-    if "default" in sections:
-        sections.remove("default")
-    elif venv.envconfig.skip_install:
-        args.append("--no-default")
-    for section in sections:
-        args.extend(["-s", section])
-    venv._pcall(
-        args,
-        cwd=venv.envconfig.config.toxinidir,
-        venv=False,
-        action=action,
-    )
+    deps = venv.get_resolved_dependencies()
+    if deps:
+        depinfo = ", ".join(map(str, deps))
+        action.setactivity("installdeps", depinfo)
+        venv._install(deps, action=action)
+
+    project = Project(venv.path)
+    paths = project.environment.get_paths()
+    bin_dir = os.path.join(paths["purelib"], "bin")
+    if os.path.exists(bin_dir):
+        for item in os.listdir(bin_dir):
+            bin_item = os.path.join(bin_dir, item)
+            shutil.move(bin_item, os.path.join(paths["scripts"], item))
+    return True
 
 
 @hookimpl
