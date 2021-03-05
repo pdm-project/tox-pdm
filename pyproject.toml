@@ -45,3 +45,6 @@ build-backend = "pdm.pep517.api"
 
 [tool]
 [tool.pdm]
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::DeprecationWarning"]
