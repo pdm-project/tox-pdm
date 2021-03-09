@@ -37,7 +37,8 @@ commands =
     pytest test/
 ```
 
-A real-world example can be found at this repository's [tox.ini](/tox.ini) and [GitHub Action workflow](/.github/workflows/ci.yml).
+A real-world example can be found at this repository's [tox.ini](https://github.com/pdm-project/tox-pdm/blob/main/tox.ini) and
+[GitHub Action workflow](https://github.com/pdm-project/tox-pdm/blob/main/.github/workflows/ci.yml).
 
 ## Some best practices:
 
