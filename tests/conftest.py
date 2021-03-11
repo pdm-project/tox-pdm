@@ -20,7 +20,14 @@ class MockEnvConfig:
         self.deps = []
         self.sections = []
         self.commands = []
-        self.install_command = []
+        self.install_command = [
+            "python",
+            "-m",
+            "pip",
+            "install",
+            "{opts}",
+            "{packages}",
+        ]
         self.commands_pre = []
         self.commands_post = []
         self.skip_install = False

@@ -124,6 +124,9 @@ def test_tox_runtest_pre(venv):
         ["-python", "script.py"],
         ["-", "pip", "install", "flask"],
         ["python", "-m", "pip", "install", "django"],
+        ["pdm", "install"],
+        ["-python", "-m", "pdm", "run", "release"],
+        ["pdm", "show", "flask"],
     ]
     result = tox_runtest_pre(venv)
     lib_path = get_env_lib_path(venv)
@@ -164,4 +167,7 @@ def test_tox_runtest_pre(venv):
             "-t",
             lib_path,
         ],
+        ["pdm", "install", "-p", venv.path],
+        ["-", "pdm", "run", "-p", venv.path, "release"],
+        ["pdm", "show", "flask"],
     ]

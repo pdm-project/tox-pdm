@@ -83,7 +83,7 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
     clone_pdm_files(venv)
     sections = venv.envconfig.sections or []
     # Install to local __pypackages__ folder
-    venv.envconfig.install_command.extend(["-t", get_env_lib_path(venv)])
+    inject_pdm_to_commands(venv, [venv.envconfig.install_command])
     if not venv.envconfig.skip_install or sections:
         action.setactivity("pdminstall", sections)
         args = [venv.envconfig.config.option.pdm, "install", "-p", str(venv.path)]
@@ -119,7 +119,9 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
 
 @hookimpl
 def tox_runtest_pre(venv: venv.VirtualEnv) -> Any:
-    inject_pdm_to_commands(venv)
+    inject_pdm_to_commands(venv, venv.envconfig.commands_pre)
+    inject_pdm_to_commands(venv, venv.envconfig.commands)
+    inject_pdm_to_commands(venv, venv.envconfig.commands_post)
 
 
 @hookimpl

@@ -10,6 +10,9 @@ from tox import venv
 
 
 def clone_pdm_files(venv: venv.VirtualEnv) -> None:
+    """Initialize the PDM project for the given VirtualEnv by cloning
+    the pyproject.toml and pdm.lock files to the venv path.
+    """
     venv.path.ensure(dir=1)
     project_root: py.path.local = venv.envconfig.config.toxinidir
     old_pyproject = toml.loads(project_root.join("pyproject.toml").read())
@@ -29,6 +32,7 @@ def clone_pdm_files(venv: venv.VirtualEnv) -> None:
 
 
 def set_default_kwargs(func_or_method, **kwargs):
+    """Change the default value for keyword arguments."""
     func = getattr(func_or_method, "__func__", func_or_method)
     args = inspect.signature(func).parameters
     defaults = {k: v.default for k, v in args.items() if v.default is not v.empty}
@@ -57,31 +61,47 @@ def get_version_bit(executable: os.PathLike) -> str:
 
 
 def get_env_lib_path(venv: venv.VirtualEnv) -> py.path.local:
+    """Return the PEP 582 library path for the given VirtualEnv."""
     version_bit = get_version_bit(venv.getsupportedinterpreter())
     return venv.path.join(f"__pypackages__/{version_bit}/lib")
 
 
-def inject_pdm_to_commands(venv: venv.VirtualEnv) -> None:
+NON_PROJECT_COMMANDS = ("cache", "show", "completion")
+
+
+def inject_pdm_to_commands(venv: venv.VirtualEnv, commands: List[List[str]]) -> None:
+    """Inject pdm run to the commands in place.
+
+    Examples:
+        - <cmd> -> pdm run <cmd>
+        - pip install <pkg> -> pdm run pip install <pkg> -t <lib_path>
+    """
     cmd_prefix = [venv.envconfig.config.option.pdm, "run", "-p", venv.path]
     pip_postfix = ["-t", get_env_lib_path(venv)]
 
-    def inject_pdm(commands: List[List[str]]) -> None:
-        for argv in commands:
-            cmd = argv[0]
-            inject_pos = 0
-            if cmd == "-":
-                cmd = argv[1]
-                inject_pos = 1
-            elif cmd.startswith("-"):
-                cmd = cmd.lstrip("-")
-                argv[:1] = ["-", cmd]
-                inject_pos = 1
-            if argv[inject_pos : inject_pos + 2] == ["pip", "install"] or argv[
-                inject_pos : inject_pos + 4
-            ] == ["python", "-m", "pip", "install"]:
-                argv.extend(pip_postfix)
+    for argv in commands:
+        cmd = argv[0]
+        inject_pos = 0
+        if cmd == "-":
+            cmd = argv[1]
+            inject_pos = 1
+        elif cmd.startswith("-"):
+            cmd = cmd.lstrip("-")
+            argv[:1] = ["-", cmd]
+            inject_pos = 1
+        if argv[inject_pos : inject_pos + 2] == ["pip", "install"] or argv[
+            inject_pos : inject_pos + 4
+        ] == ["python", "-m", "pip", "install"]:
+            argv.extend(pip_postfix)
+        if argv[inject_pos : inject_pos + 3] == ["python", "-m", "pdm"]:
+            argv[inject_pos : inject_pos + 3] = ["pdm"]
+        if argv[inject_pos] == "pdm":
+            argv[inject_pos] = venv.envconfig.config.option.pdm
+            if (
+                inject_pos + 1 < len(argv)
+                and argv[inject_pos + 1] not in NON_PROJECT_COMMANDS
+                and not argv[inject_pos + 1].startswith("-")
+            ):
+                argv[inject_pos + 2 : inject_pos + 2] = ["-p", venv.path]
+        else:
             argv[inject_pos:inject_pos] = cmd_prefix
-
-    inject_pdm(venv.envconfig.commands_pre)
-    inject_pdm(venv.envconfig.commands)
-    inject_pdm(venv.envconfig.commands_post)
