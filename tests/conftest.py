@@ -1,3 +1,4 @@
+from argparse import Namespace
 import sys
 from unittest import mock
 
@@ -10,6 +11,7 @@ FIX_PROJECT = py.path.local(__file__).dirpath("fixture-project")
 class MockConfig:
     def __init__(self) -> None:
         self.toxinidir = py.path.local(".")
+        self.option = Namespace(pdm="pdm")
 
 
 class MockEnvConfig:
