@@ -11,7 +11,6 @@ dependencies = [
 dev-dependencies = [
 
 ]
-includes = ["tox_pdm.py"]
 requires-python = ">=3.7"
 dynamic = ["classifiers", "version"]
 license = {text = "MIT"}
