@@ -19,6 +19,12 @@ Or,
 $ pdm add -d tox-pdm
 ```
 
+Or if you installed `tox` via `pipx`, you can inject the plugin by:
+
+```console
+$ pipx inject tox tox-pdm
+```
+
 ## Example tox.ini
 
 The following simple example installs `dev` and `test` dependencies into the venv created by Tox and uses pytest to execute the tests, on both Python 3.7 and 3.8.
@@ -42,5 +48,6 @@ A real-world example can be found at this repository's [tox.ini](https://github.
 
 ## Some best practices:
 
-1. Make sure you have generated `pdm.lock` before running the test, it will greatly accelerate the testing.
-2. If you don't set `skip_install = true`, the current package will be built and installed into the testing environment together with the `dependencies` from `pyproject.toml`.
+1. `pdm` executable must be exposed in `PATH`, if it is not the case, give the absolute path to tox by `tox --pdm <path_to_pdm>`.
+2. Make sure you have generated `pdm.lock` before running the test, it will greatly accelerate the testing.
+3. If you don't set `skip_install = true`, the current package will be built and installed into the testing environment together with the `dependencies` from `pyproject.toml`.
