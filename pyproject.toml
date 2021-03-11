@@ -7,7 +7,6 @@ authors = [
 ]
 dependencies = [
     "tox>=3.8.0",
-    "pdm>=1.4.0",
 ]
 dev-dependencies = [
 
@@ -28,7 +27,7 @@ Homepage = "https://github.com/pdm-project/tox-pdm"
 Repository = "https://github.com/pdm-project/tox-pdm"
 
 [project.entry-points.tox]
-pdm = "tox_pdm"
+pdm = "tox_pdm.plugin"
 
 
 [project.optional-dependencies]

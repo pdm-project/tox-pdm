@@ -1,15 +1,16 @@
+import os
 from pathlib import Path
 import sys
 
 import toml
-from pdm.project import Project
 
-from tox_pdm import (
+from tox_pdm.plugin import (
     tox_testenv_install_deps,
     tox_testenv_create,
     tox_runtest_pre,
     tox_runenvreport,
 )
+from tox_pdm.utils import get_env_lib_path
 
 
 def test_tox_install_deps(venv, action):
@@ -17,7 +18,7 @@ def test_tox_install_deps(venv, action):
     assert result is True
 
     venv._pcall.assert_called_once_with(
-        [sys.executable, "-m", "pdm", "install", "-p", str(venv.path)],
+        ["pdm", "install", "-p", str(venv.path)],
         cwd=venv.envconfig.config.toxinidir,
         venv=False,
         action=action,
@@ -38,8 +39,6 @@ def test_tox_install_sections(venv, action):
 
     venv._pcall.assert_called_once_with(
         [
-            sys.executable,
-            "-m",
             "pdm",
             "install",
             "-p",
@@ -63,10 +62,9 @@ def test_tox_skip_install(venv, action):
 
 def test_tox_install_deps_with_deps(venv, action):
     venv.envconfig.deps = ["Flask"]
-    project = Project(venv.path)
 
     def fake_install(*args, **kwargs):
-        bin_dir = Path(project.environment.get_paths()["purelib"], "bin")
+        bin_dir = Path(get_env_lib_path(venv).join("bin"))
         bin_dir.mkdir(parents=True, exist_ok=True)
         bin_dir.joinpath("fake_bin").touch()
 
@@ -76,8 +74,6 @@ def test_tox_install_deps_with_deps(venv, action):
 
     venv._pcall.assert_called_once_with(
         [
-            sys.executable,
-            "-m",
             "pdm",
             "install",
             "-p",
@@ -89,7 +85,9 @@ def test_tox_install_deps_with_deps(venv, action):
     )
 
     venv._install.assert_called_once_with(["Flask"], action=action)
-    scripts = Path(project.environment.get_paths()["scripts"])
+    scripts = Path(
+        get_env_lib_path(venv).dirpath("Scripts" if os.name == "nt" else "bin")
+    )
     assert scripts.joinpath("fake_bin").exists()
 
 
@@ -103,7 +101,7 @@ def test_tox_runenvreport(venv, action):
             "pip",
             "freeze",
             "--path",
-            str(Project(venv.path).environment.packages_path / "lib"),
+            get_env_lib_path(venv),
         ]
     )
 
@@ -113,7 +111,7 @@ def test_tox_testenv_create(venv, action):
     assert result is True
 
     venv._pcall.assert_called_once_with(
-        [sys.executable, "-m", "pdm", "use", "-f", sys.executable],
+        ["pdm", "use", "-f", sys.executable],
         cwd=venv.path,
         venv=False,
         action=action,
@@ -128,48 +126,42 @@ def test_tox_runtest_pre(venv):
         ["python", "-m", "pip", "install", "django"],
     ]
     result = tox_runtest_pre(venv)
-    project = Project(venv.path)
+    lib_path = get_env_lib_path(venv)
     assert result is None
     assert venv.envconfig.commands == [
-        [sys.executable, "-m", "pdm", "run", "-p", str(project.root), "flake8"],
+        ["pdm", "run", "-p", venv.path, "flake8"],
         [
             "-",
-            sys.executable,
-            "-m",
             "pdm",
             "run",
             "-p",
-            str(project.root),
+            venv.path,
             "python",
             "script.py",
         ],
         [
             "-",
-            sys.executable,
-            "-m",
             "pdm",
             "run",
             "-p",
-            str(project.root),
+            venv.path,
             "pip",
             "install",
             "flask",
             "-t",
-            str(project.environment.packages_path / "lib"),
+            lib_path,
         ],
         [
-            sys.executable,
-            "-m",
             "pdm",
             "run",
             "-p",
-            str(project.root),
+            venv.path,
             "python",
             "-m",
             "pip",
             "install",
             "django",
             "-t",
-            str(project.environment.packages_path / "lib"),
+            lib_path,
         ],
     ]
