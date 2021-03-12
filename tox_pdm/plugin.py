@@ -83,7 +83,9 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
     clone_pdm_files(venv)
     sections = venv.envconfig.sections or []
     # Install to local __pypackages__ folder
-    inject_pdm_to_commands(venv, [venv.envconfig.install_command])
+    for i, arg in enumerate(venv.envconfig.install_command):
+        if arg == "python":
+            venv.envconfig.install_command[i] = venv.getsupportedinterpreter()
     if not venv.envconfig.skip_install or sections:
         action.setactivity("pdminstall", sections)
         args = [venv.envconfig.config.option.pdm, "install", "-p", str(venv.path)]
