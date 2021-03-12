@@ -18,7 +18,7 @@ def test_install_conditional_deps(tmpdir):
         """
         [tox]
         envlist = django{2,3}
-        isolated_build = true
+        passenv = LD_PRELOAD
 
         [testenv]
         sections =
