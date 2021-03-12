@@ -1,5 +1,5 @@
-from argparse import Namespace
 import sys
+from argparse import Namespace
 from unittest import mock
 
 import py

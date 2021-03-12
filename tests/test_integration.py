@@ -1,7 +1,7 @@
 import textwrap
 
 import py
-from tox.session import setup_reporter, load_config, set_os_env_var, build_session
+from tox.session import build_session, load_config, set_os_env_var, setup_reporter
 
 FIX_PROJECT = py.path.local(__file__).dirpath("fixture-project")
 
