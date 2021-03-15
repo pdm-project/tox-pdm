@@ -96,7 +96,7 @@ def test_tox_runenvreport(venv, action):
     assert result is None
     assert venv.envconfig.list_dependencies_command == (
         [
-            "python",
+            venv.getsupportedinterpreter(),
             "-m",
             "pip",
             "freeze",

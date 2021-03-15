@@ -75,6 +75,11 @@ def acquire_package(config: config.Config, venv: venv.VirtualEnv) -> py.path.loc
 def tox_package(session: session.Session, venv: venv.VirtualEnv) -> Any:
     if not hasattr(session, "package"):
         session.package, session.dist = get_package(session, venv)
+    # Patch the install command to install to local __pypackages__ folder
+    for i, arg in enumerate(venv.envconfig.install_command):
+        if arg == "python":
+            venv.envconfig.install_command[i] = venv.getsupportedinterpreter()
+    venv.envconfig.install_command.extend(["-t", get_env_lib_path(venv)])
     return session.package
 
 
@@ -82,10 +87,6 @@ def tox_package(session: session.Session, venv: venv.VirtualEnv) -> Any:
 def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> Any:
     clone_pdm_files(venv)
     sections = venv.envconfig.sections or []
-    # Install to local __pypackages__ folder
-    for i, arg in enumerate(venv.envconfig.install_command):
-        if arg == "python":
-            venv.envconfig.install_command[i] = venv.getsupportedinterpreter()
     if not venv.envconfig.skip_install or sections:
         action.setactivity("pdminstall", sections)
         args = [venv.envconfig.config.option.pdm, "install", "-p", str(venv.path)]
@@ -127,5 +128,9 @@ def tox_runtest_pre(venv: venv.VirtualEnv) -> Any:
 
 
 @hookimpl
-def tox_runenvreport(venv, action):
+def tox_runenvreport(venv: venv.VirtualEnv, action: action.Action):
+    command = venv.envconfig.list_dependencies_command
+    for i, arg in enumerate(command):
+        if arg == "python":
+            command[i] = venv.getsupportedinterpreter()
     venv.envconfig.list_dependencies_command.extend(["--path", get_env_lib_path(venv)])
