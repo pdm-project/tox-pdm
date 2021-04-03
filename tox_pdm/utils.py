@@ -54,7 +54,7 @@ def get_version_bit(executable: os.PathLike) -> str:
     """
     script = (
         'import os,sys;print(".".join(map(str, sys.version_info[:2])) '
-        '+ ("_32" if os.name == "nt" and sys.maxsize <= 2**32 else ""))'
+        '+ ("-32" if os.name == "nt" and sys.maxsize <= 2**32 else ""))'
     )
     args = [executable, "-c", script]
     return subprocess.check_output(args).decode().strip()
