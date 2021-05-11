@@ -8,7 +8,6 @@ authors = [
 dependencies = [
     "requests~=2.25",
 ]
-dev-dependencies = []
 requires-python = ">=3.6"
 dynamic = ["classifiers"]
 license = {text = "MIT"}
