@@ -24,6 +24,12 @@ jobs:
           python -m pip install tox${{ matrix.tox-version }} tox-gh-actions pdm .
       - name: Test with tox
         run: |
-          tox
+          if which tox4 > /dev/null
+          then
+            mv pdm.tox4.lock pdm.lock
+            tox4
+          else
+            tox
+          fi
         env:
           LD_PRELOAD: /lib/x86_64-linux-gnu/libgcc_s.so.1

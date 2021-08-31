@@ -1,6 +1,5 @@
 """Plugin specification for Tox 3"""
 import os
-from posixpath import dirname
 import shutil
 from typing import Any, Tuple
 
@@ -63,8 +62,15 @@ def get_package(
 def acquire_package(config: config.Config, venv: venv.VirtualEnv) -> py.path.local:
     target_dir: py.path.local = config.toxworkdir.join(config.isolated_build_env)
     ensure_empty_dir(target_dir)
-    args = [venv.envconfig.config.option.pdm, "build", "--no-wheel", "-d", target_dir]
+    args = [
+        venv.envconfig.config.option.pdm,
+        "build",
+        "--no-wheel",
+        "-d",
+        target_dir,
+    ]
     with venv.new_action("buildpkg") as action:
+        tox_testenv_create(venv, action)
         venv._pcall(
             args, cwd=venv.envconfig.config.toxinidir, venv=False, action=action
         )
@@ -75,6 +81,7 @@ def acquire_package(config: config.Config, venv: venv.VirtualEnv) -> py.path.loc
 
 @hookimpl
 def tox_package(session: session.Session, venv: venv.VirtualEnv) -> Any:
+    clone_pdm_files(str(venv.path), str(venv.envconfig.config.toxinidir))
     if not hasattr(session, "package"):
         session.package, session.dist = get_package(session, venv)
     # Patch the install command to install to local __pypackages__ folder
@@ -89,7 +96,6 @@ def tox_package(session: session.Session, venv: venv.VirtualEnv) -> Any:
 
 @hookimpl
 def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> Any:
-    clone_pdm_files(venv)
     groups = venv.envconfig.groups or []
     if not venv.envconfig.skip_install or groups:
         action.setactivity("pdminstall", groups)
@@ -99,7 +105,8 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
         elif venv.envconfig.skip_install:
             args.append("--no-default")
         for group in groups:
-            args.extend(["--g", group])
+            args.extend(["--group", group])
+        args.append("--no-self")
         venv._pcall(
             args,
             cwd=venv.envconfig.config.toxinidir,
@@ -114,7 +121,7 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
         venv._install(deps, action=action)
 
     lib_path = get_env_lib_path(venv.envconfig.config.option.pdm, venv.path)
-    bin_dir = os.path.join(lib_path, "lib")
+    bin_dir = os.path.join(lib_path, "bin")
     scripts_dir = os.path.join(
         os.path.dirname(lib_path), ("Scripts" if os.name == "nt" else "bin")
     )
