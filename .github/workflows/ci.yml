@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8, 3.9]
-        tox-version: ["==3.17", "==3.18.0", "==3.19.0", "==3.20.0", ""]
+        tox-version: ["==3.18.0", "==3.19.0", "==3.20.0", ">=4.0.0a2"]
 
     steps:
       - uses: actions/checkout@v2

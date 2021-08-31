@@ -41,6 +41,7 @@ build-backend = "pdm.pep517.api"
 
 [tool]
 [tool.pdm]
+allow_prereleases = true
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]
