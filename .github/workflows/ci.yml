@@ -16,20 +16,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: pdm-project/setup-pdm@main
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install "tox${{ matrix.tox-version }}" tox-gh-actions pdm .
+          python -m pip install "tox${{ matrix.tox-version }}" .
       - name: Test with tox
         run: |
+          pyversion="${{ matrix.python-version }}"
           if which tox4 > /dev/null
           then
             mv pdm.tox4.lock pdm.lock
-            tox4
+            tox4 -e py${pyversion/./}
           else
-            tox
+            tox -e py${pyversion/./}
           fi
-        env:
-          LD_PRELOAD: /lib/x86_64-linux-gnu/libgcc_s.so.1
