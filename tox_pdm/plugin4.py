@@ -50,6 +50,7 @@ class Pdm(Python):
     def __init__(self, create_args: ToxEnvCreateArgs) -> None:
         self._executor: t.Optional[Execute] = None
         self._installer: t.Optional[Pip] = None
+        self._package_path: t.Optional[Path] = None
         super().__init__(create_args)
 
     @property
@@ -63,6 +64,14 @@ class Pdm(Python):
         if self._installer is None:
             self._installer = PipPep582(self)
         return self._installer
+
+    @property
+    def package_path(self) -> Path:
+        if not self._package_path:
+            self._package_path = Path(
+                get_env_lib_path(self.options.pdm, self.env_dir)
+            ).parent
+        return self._package_path
 
     @property
     def runs_on_platform(self) -> str:
@@ -108,18 +117,6 @@ class Pdm(Python):
 
 
 class PdmRunner(Pdm, PythonRun):
-    def __init__(self, create_args: ToxEnvCreateArgs) -> None:
-        self._package_path: t.Optional[Path] = None
-        super().__init__(create_args)
-
-    @property
-    def package_path(self) -> Path:
-        if not self._package_path:
-            self._package_path = Path(
-                get_env_lib_path(self.options.pdm, self.env_dir)
-            ).parent
-        return self._package_path
-
     def _setup_env(self) -> None:
         super()._setup_env()
         groups = self.conf["groups"]
