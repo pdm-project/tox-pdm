@@ -129,7 +129,7 @@ class PdmRunner(Pdm, PythonRun):
             return
         scripts_path = self.env_bin_dir()
         for file in bin_path.iterdir():
-            shutil.move(file, scripts_path)
+            shutil.move(os.fspath(file), os.fspath(scripts_path))
 
     def register_config(self) -> None:
         super().register_config()
