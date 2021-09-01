@@ -1,9 +1,11 @@
+import sys
 import textwrap
 
 import py
-from tox.session import build_session, load_config, set_os_env_var, setup_reporter
+from tox import __version__ as TOX_VERSION
 
 FIX_PROJECT = py.path.local(__file__).dirpath("fixture-project")
+IS_TOX_4 = TOX_VERSION[0] == "4"
 
 
 def setup_project(tmpdir, tox_config):
@@ -11,9 +13,22 @@ def setup_project(tmpdir, tox_config):
         FIX_PROJECT.join(filename).copy(tmpdir.join(filename))
     with tmpdir.join("tox.ini").open("w", ensure=True) as f:
         f.write(tox_config)
+    with tmpdir.join(".pdm.toml").open("w", ensure=True) as f:
+        f.write(
+            """[python]
+path = "{}"
+""".format(
+                sys.executable.replace("\\", "/")
+            )
+        )
 
 
 def test_install_conditional_deps(tmpdir):
+    if IS_TOX_4:
+        from tox.run import main
+    else:
+        from tox.session import main
+
     test_config = textwrap.dedent(
         """
         [tox]
@@ -21,7 +36,7 @@ def test_install_conditional_deps(tmpdir):
         passenv = LD_PRELOAD
 
         [testenv]
-        sections =
+        groups =
             lint
         deps =
             django2: Django~=2.0
@@ -33,12 +48,14 @@ def test_install_conditional_deps(tmpdir):
     )
     setup_project(tmpdir, test_config)
     with tmpdir.as_cwd():
-        setup_reporter([])
-        config = load_config([])
-        config.logdir.ensure(dir=1)
-        with set_os_env_var(str("TOX_WORK_DIR"), config.toxworkdir):
-            session = build_session(config)
-            exit_code = session.runcommand()
-        assert exit_code == 0
+        try:
+            main([])
+        except SystemExit as e:
+            if e.code != 0:
+                raise RuntimeError(f"non-zero exit code: {e.code}")
 
-    assert tmpdir.join(".tox/.package/demo-0.1.0.tar.gz").exists()
+    if TOX_VERSION[0] == "4":
+        package = tmpdir.join(".tox/4/.pkg/dist/demo-0.1.0.tar.gz")
+    else:
+        package = tmpdir.join(".tox/.package/demo-0.1.0.tar.gz")
+    assert package.exists()

@@ -1,34 +1,31 @@
-import functools
+from __future__ import annotations
+
 import inspect
 import os
+import shutil
 import subprocess
-from typing import List
+from pathlib import Path
+from typing import List, Sequence
 
-import py
 import toml
-from tox import venv
 
 
-def clone_pdm_files(venv: venv.VirtualEnv) -> None:
+def clone_pdm_files(env_path: str | Path, root: str | Path) -> None:
     """Initialize the PDM project for the given VirtualEnv by cloning
     the pyproject.toml and pdm.lock files to the venv path.
     """
-    venv.path.ensure(dir=1)
-    project_root: py.path.local = venv.envconfig.config.toxinidir
-    old_pyproject = toml.loads(project_root.join("pyproject.toml").read())
+    env_path = Path(env_path)
+    if not env_path.exists():
+        env_path.mkdir(parents=True)
+    root = Path(root)
+    old_pyproject = toml.load(root.joinpath("pyproject.toml").open("r"))
     if "name" in old_pyproject.get("project", {}):
         del old_pyproject["project"]["name"]
-    with venv.path.join("pyproject.toml").open("w", ensure=True) as f:
+    with env_path.joinpath("pyproject.toml").open("w") as f:
         toml.dump(old_pyproject, f)
 
-    if project_root.join("pdm.lock").exists():
-        project_root.join("pdm.lock").copy(venv.path.join("pdm.lock"))
-
-    base_path = venv.path.join(
-        f"__pypackages__/{get_version_bit(venv.getsupportedinterpreter())}"
-    )
-    for subdir in ("include", "lib", "Scripts" if os.name == "nt" else "bin", "src"):
-        base_path.join(subdir).ensure(dir=1)
+    if root.joinpath("pdm.lock").exists():
+        shutil.copy2(root.joinpath("pdm.lock"), env_path.joinpath("pdm.lock"))
 
 
 def set_default_kwargs(func_or_method, **kwargs):
@@ -42,42 +39,26 @@ def set_default_kwargs(func_or_method, **kwargs):
     func.__defaults__ = tuple(defaults.values())
 
 
-@functools.lru_cache()
-def get_version_bit(executable: os.PathLike) -> str:
-    """Get the version of the Python interperter.
-
-    :param executable: The path of the python executable
-    :param as_string: return the version string if set to True
-        and version tuple otherwise
-    :param digits: the number of version parts to be returned
-    :returns: A tuple of (version, is_64bit)
-    """
-    script = (
-        'import os,sys;print(".".join(map(str, sys.version_info[:2])) '
-        '+ ("-32" if os.name == "nt" and sys.maxsize <= 2**32 else ""))'
-    )
-    args = [executable, "-c", script]
-    return subprocess.check_output(args).decode().strip()
-
-
-def get_env_lib_path(venv: venv.VirtualEnv) -> py.path.local:
+def get_env_lib_path(pdm_exe: str, env_path: str | Path) -> str:
     """Return the PEP 582 library path for the given VirtualEnv."""
-    version_bit = get_version_bit(venv.getsupportedinterpreter())
-    return venv.path.join(f"__pypackages__/{version_bit}/lib")
+    cmd = [pdm_exe, "info", "-p", str(env_path), "--packages"]
+    return os.path.join(subprocess.check_output(cmd).decode().strip(), "lib")
 
 
 NON_PROJECT_COMMANDS = ("cache", "show", "completion")
 
 
-def inject_pdm_to_commands(venv: venv.VirtualEnv, commands: List[List[str]]) -> None:
+def inject_pdm_to_commands(
+    pdm_exe: str, env_path: str | Path, commands: List[List[str]]
+) -> None:
     """Inject pdm run to the commands in place.
 
     Examples:
         - <cmd> -> pdm run <cmd>
         - pip install <pkg> -> pdm run pip install <pkg> -t <lib_path>
     """
-    cmd_prefix = [venv.envconfig.config.option.pdm, "run", "-p", venv.path]
-    pip_postfix = ["-t", get_env_lib_path(venv)]
+    cmd_prefix = [pdm_exe, "run", "-p", str(env_path)]
+    pip_postfix = ["-t", get_env_lib_path(pdm_exe, env_path)]
 
     for argv in commands:
         cmd = argv[0]
@@ -96,12 +77,27 @@ def inject_pdm_to_commands(venv: venv.VirtualEnv, commands: List[List[str]]) -> 
         if argv[inject_pos : inject_pos + 3] == ["python", "-m", "pdm"]:
             argv[inject_pos : inject_pos + 3] = ["pdm"]
         if argv[inject_pos] == "pdm":
-            argv[inject_pos] = venv.envconfig.config.option.pdm
+            argv[inject_pos] = pdm_exe
             if (
                 inject_pos + 1 < len(argv)
                 and argv[inject_pos + 1] not in NON_PROJECT_COMMANDS
                 and not argv[inject_pos + 1].startswith("-")
             ):
-                argv[inject_pos + 2 : inject_pos + 2] = ["-p", venv.path]
+                argv[inject_pos + 2 : inject_pos + 2] = ["-p", str(env_path)]
         else:
             argv[inject_pos:inject_pos] = cmd_prefix
+
+
+def is_same_path(left: str | Path, right: str | Path) -> bool:
+    """Check if the two paths are the same"""
+    return Path(left).expanduser().resolve() == Path(right).expanduser().resolve()
+
+
+def is_sub_array(source: Sequence, target: Sequence) -> bool:
+    """Check if the given source is a sub-array of the target"""
+    if len(source) > len(target):
+        return False
+    for i in range(0, len(target) - len(source) + 1):
+        if target[i : i + len(source)] == source:
+            return True
+    return False
