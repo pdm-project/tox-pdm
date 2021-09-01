@@ -36,7 +36,7 @@ The following simple example installs `dev` and `test` dependencies into the ven
 envlist = py37,py38
 
 [testenv]
-sections =  ; Dependency sections in pyproject.toml
+groups =  ; Dependency groups in pyproject.toml
     dev
     test
 deps =      ; Additional dependencies, it will be installed into the library path via normal pip method
