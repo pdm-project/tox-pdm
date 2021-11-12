@@ -1,4 +1,5 @@
 import os
+
 from tox import __version__ as TOX_VERSION
 
 os.environ.pop("NO_SITE_PACKAGES", None)
