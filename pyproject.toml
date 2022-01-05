@@ -1,16 +1,15 @@
 [project]
 name = "tox-pdm"
-version = {use_scm = true}
 description = "A plugin for tox that utilizes PDM as the package manager and installer"
 authors = [
     {name = "Frost Ming", email = "mianghong@gmail.com"},
 ]
 dependencies = [
-    "tox>=3.8.0",
-    "toml~=0.10",
+    "tox>=3.18.0",
+    "toml>=0.10",
 ]
-requires-python = ">=3.6"
-dynamic = ["classifiers", "version"]
+requires-python = ">=3.7"
+dynamic = ["version"]
 license = {text = "MIT"}
 readme = "README.md"
 keywords = ["tox", "testing"]
@@ -29,12 +28,12 @@ pdm = "tox_pdm.plugin"
 
 [project.optional-dependencies]
 test = [
-    "pytest~=6.2",
-    "coverage~=5.5",
+    "pytest>=6.2",
+    "coverage>=5.5",
 ]
 lint = [
-    "flake8~=3.8",
-    "black~=20.8b1",
+    "flake8>=3.8",
+    "black>=20.8b1",
 ]
 [build-system]
 requires = ["pdm-pep517"]
@@ -42,6 +41,7 @@ build-backend = "pdm.pep517.api"
 
 [tool]
 [tool.pdm]
+version = {use_scm = true}
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]

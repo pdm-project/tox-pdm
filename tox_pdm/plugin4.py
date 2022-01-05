@@ -141,12 +141,16 @@ class PdmRunner(Pdm, PythonRun):
         )
 
     @property
-    def _default_package_tox_env_type(self) -> str:
+    def _package_tox_env_type(self) -> str:
         return "pdm-pep-517"
 
     @staticmethod
     def id() -> str:
         return "pdm"
+
+    @property
+    def _external_pkg_tox_env_type(self) -> str:
+        return "virtualenv-cmd-builder"
 
 
 class PdmPackageEnv(Pdm, PackageToxEnv):
@@ -187,6 +191,9 @@ class PdmPackageEnv(Pdm, PackageToxEnv):
     @staticmethod
     def id() -> str:
         return "pdm-pep-517"
+
+    def child_pkg_envs(self, run_conf: EnvConfigSet) -> t.Iterator[PackageToxEnv]:
+        return iter(())
 
 
 class PipPep582(Pip):

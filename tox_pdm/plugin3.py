@@ -1,13 +1,15 @@
 """Plugin specification for Tox 3"""
+import functools
 import os
 import shutil
 from typing import Any, Tuple
 
 import py
-from tox import action, config, hookimpl, reporter, session, venv
+from tox import action, config, hookimpl, reporter, session
 from tox.package.view import create_session_view
 from tox.util.lock import hold_lock
 from tox.util.path import ensure_empty_dir
+from tox.venv import VirtualEnv
 
 from .utils import (
     clone_pdm_files,
@@ -24,15 +26,26 @@ def tox_addoption(parser: config.Parser) -> Any:
     )
     os.environ["TOX_TESTENV_PASSENV"] = "PYTHONPATH"
     parser.add_argument("--pdm", default="pdm", help="The executable path of PDM")
-    set_default_kwargs(venv.VirtualEnv._pcall, venv=False)
-    set_default_kwargs(venv.VirtualEnv.getcommandpath, venv=False)
+    set_default_kwargs(VirtualEnv._pcall, venv=False)
+    set_default_kwargs(VirtualEnv.getcommandpath, venv=False)
 
 
 @hookimpl
-def tox_testenv_create(venv: venv.VirtualEnv, action: action.Action) -> Any:
+def tox_testenv_create(venv: VirtualEnv, action: action.Action) -> Any:
     clone_pdm_files(str(venv.path), str(venv.envconfig.config.toxinidir))
-
     config_interpreter = venv.getsupportedinterpreter()
+
+    def patch_getcommandpath(getcommandpath):
+        @functools.wraps(getcommandpath)
+        def patched(self, cmd, *args, **kwargs):
+            if cmd == "python":
+                return config_interpreter
+            return getcommandpath(self, cmd, *args, **kwargs)
+
+        return patched
+
+    VirtualEnv.getcommandpath = patch_getcommandpath(VirtualEnv.getcommandpath)
+
     venv._pcall(
         [venv.envconfig.config.option.pdm, "use", "-f", config_interpreter],
         cwd=venv.path,
@@ -43,7 +56,7 @@ def tox_testenv_create(venv: venv.VirtualEnv, action: action.Action) -> Any:
 
 
 def get_package(
-    session: session.Session, venv: venv.VirtualEnv
+    session: session.Session, venv: VirtualEnv
 ) -> Tuple[py.path.local, py.path.local]:
     config = session.config
     if config.skipsdist:
@@ -59,7 +72,7 @@ def get_package(
         return session_package, package
 
 
-def acquire_package(config: config.Config, venv: venv.VirtualEnv) -> py.path.local:
+def acquire_package(config: config.Config, venv: VirtualEnv) -> py.path.local:
     target_dir: py.path.local = config.toxworkdir.join(config.isolated_build_env)
     ensure_empty_dir(target_dir)
     args = [
@@ -80,7 +93,7 @@ def acquire_package(config: config.Config, venv: venv.VirtualEnv) -> py.path.loc
 
 
 @hookimpl
-def tox_package(session: session.Session, venv: venv.VirtualEnv) -> Any:
+def tox_package(session: session.Session, venv: VirtualEnv) -> Any:
     clone_pdm_files(str(venv.path), str(venv.envconfig.config.toxinidir))
     if not hasattr(session, "package"):
         session.package, session.dist = get_package(session, venv)
@@ -95,7 +108,7 @@ def tox_package(session: session.Session, venv: venv.VirtualEnv) -> Any:
 
 
 @hookimpl
-def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> Any:
+def tox_testenv_install_deps(venv: VirtualEnv, action: action.Action) -> Any:
     groups = venv.envconfig.groups or []
     if not venv.envconfig.skip_install or groups:
         action.setactivity("pdminstall", groups)
@@ -134,7 +147,7 @@ def tox_testenv_install_deps(venv: venv.VirtualEnv, action: action.Action) -> An
 
 
 @hookimpl
-def tox_runtest_pre(venv: venv.VirtualEnv) -> Any:
+def tox_runtest_pre(venv: VirtualEnv) -> Any:
     inject_pdm_to_commands(
         venv.envconfig.config.option.pdm, venv.path, venv.envconfig.commands_pre
     )
@@ -147,7 +160,7 @@ def tox_runtest_pre(venv: venv.VirtualEnv) -> Any:
 
 
 @hookimpl
-def tox_runenvreport(venv: venv.VirtualEnv, action: action.Action):
+def tox_runenvreport(venv: VirtualEnv, action: action.Action):
     command = venv.envconfig.list_dependencies_command
     for i, arg in enumerate(command):
         if arg == "python":
