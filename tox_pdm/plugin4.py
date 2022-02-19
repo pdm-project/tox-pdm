@@ -43,7 +43,7 @@ def tox_add_option(parser: ArgumentParser) -> None:
 def tox_register_tox_env(register: ToxEnvRegister) -> t.Optional[bool]:
     register.add_run_env(PdmRunner)
     register.add_package_env(PdmPackageEnv)
-    register.default_run_env = "pdm"
+    register.default_env_runner = "pdm"
 
 
 class Pdm(Python):
