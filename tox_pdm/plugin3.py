@@ -13,6 +13,7 @@ from tox.venv import VirtualEnv
 
 from .utils import (
     clone_pdm_files,
+    detect_pdm_files,
     get_env_lib_path,
     inject_pdm_to_commands,
     set_default_kwargs,
@@ -95,6 +96,8 @@ def acquire_package(config: config.Config, venv: VirtualEnv) -> py.path.local:
 @hookimpl
 def tox_package(session: session.Session, venv: VirtualEnv) -> Any:
     clone_pdm_files(str(venv.path), str(venv.envconfig.config.toxinidir))
+    if not detect_pdm_files(venv.path):
+        return
     if not hasattr(session, "package"):
         session.package, session.dist = get_package(session, venv)
     # Patch the install command to install to local __pypackages__ folder
@@ -109,6 +112,8 @@ def tox_package(session: session.Session, venv: VirtualEnv) -> Any:
 
 @hookimpl
 def tox_testenv_install_deps(venv: VirtualEnv, action: action.Action) -> Any:
+    if not detect_pdm_files(venv.path):
+        return
     groups = venv.envconfig.groups or []
     if not venv.envconfig.skip_install or groups:
         action.setactivity("pdminstall", groups)
@@ -148,6 +153,8 @@ def tox_testenv_install_deps(venv: VirtualEnv, action: action.Action) -> Any:
 
 @hookimpl
 def tox_runtest_pre(venv: VirtualEnv) -> Any:
+    if not detect_pdm_files(venv.path):
+        return
     inject_pdm_to_commands(
         venv.envconfig.config.option.pdm, venv.path, venv.envconfig.commands_pre
     )
@@ -161,6 +168,8 @@ def tox_runtest_pre(venv: VirtualEnv) -> Any:
 
 @hookimpl
 def tox_runenvreport(venv: VirtualEnv, action: action.Action):
+    if not detect_pdm_files(venv.path):
+        return
     command = venv.envconfig.list_dependencies_command
     for i, arg in enumerate(command):
         if arg == "python":

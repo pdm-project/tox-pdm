@@ -18,6 +18,8 @@ def clone_pdm_files(env_path: str | Path, root: str | Path) -> None:
     if not env_path.exists():
         env_path.mkdir(parents=True)
     root = Path(root)
+    if not root.joinpath("pyproject.toml").exists():
+        return
     old_pyproject = toml.load(root.joinpath("pyproject.toml").open("r"))
     if "name" in old_pyproject.get("project", {}):
         del old_pyproject["project"]["name"]
@@ -26,6 +28,16 @@ def clone_pdm_files(env_path: str | Path, root: str | Path) -> None:
 
     if root.joinpath("pdm.lock").exists():
         shutil.copy2(root.joinpath("pdm.lock"), env_path.joinpath("pdm.lock"))
+
+
+def detect_pdm_files(root: str | Path) -> bool:
+    root = Path(root)
+    pyproject = root.joinpath("pyproject.toml")
+    if not pyproject.exists():
+        return False
+    with pyproject.open("r") as f:
+        toml_data = toml.load(f)
+        return "project" in toml_data
 
 
 def set_default_kwargs(func_or_method, **kwargs):
