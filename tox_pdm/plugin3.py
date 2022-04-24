@@ -46,13 +46,13 @@ def tox_testenv_create(venv: VirtualEnv, action: action.Action) -> Any:
         return patched
 
     VirtualEnv.getcommandpath = patch_getcommandpath(VirtualEnv.getcommandpath)
-
-    venv._pcall(
-        [venv.envconfig.config.option.pdm, "use", "-f", config_interpreter],
-        cwd=venv.path,
-        venv=False,
-        action=action,
-    )
+    if not venv.path.join(".pdm.toml").exists():
+        venv._pcall(
+            [venv.envconfig.config.option.pdm, "use", "-f", config_interpreter],
+            cwd=venv.path,
+            venv=False,
+            action=action,
+        )
     return True
 
 
@@ -84,7 +84,6 @@ def acquire_package(config: config.Config, venv: VirtualEnv) -> py.path.local:
         target_dir,
     ]
     with venv.new_action("buildpkg") as action:
-        tox_testenv_create(venv, action)
         venv._pcall(
             args, cwd=venv.envconfig.config.toxinidir, venv=False, action=action
         )
@@ -95,7 +94,8 @@ def acquire_package(config: config.Config, venv: VirtualEnv) -> py.path.local:
 
 @hookimpl
 def tox_package(session: session.Session, venv: VirtualEnv) -> Any:
-    clone_pdm_files(str(venv.path), str(venv.envconfig.config.toxinidir))
+    with venv.new_action("buildpkg") as action:
+        tox_testenv_create(venv, action)
     if not detect_pdm_files(venv.path):
         return
     if not hasattr(session, "package"):
