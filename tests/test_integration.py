@@ -34,6 +34,7 @@ def test_install_conditional_deps(tmpdir):
         [tox]
         envlist = django{2,3}
         passenv = LD_PRELOAD
+        isolated_build = True
 
         [testenv]
         groups =
@@ -55,7 +56,7 @@ def test_install_conditional_deps(tmpdir):
                 raise RuntimeError(f"non-zero exit code: {e.code}")
 
     if TOX_VERSION[0] == "4":
-        package = tmpdir.join(".tox/4/.pkg/dist/demo-0.1.0.tar.gz")
+        package = tmpdir.join(".tox/.pkg/dist/demo-0.1.0.tar.gz")
     else:
-        package = tmpdir.join(".tox/.package/demo-0.1.0.tar.gz")
+        package = tmpdir.join(".tox/dist/demo-0.1.0.tar.gz")
     assert package.exists()

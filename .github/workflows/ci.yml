@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.9]
-        tox-version: ["==3.18.0", "==3.19.0", "==3.20.0", ">=4.0.0a2"]
+        python-version: [3.8, 3.9, "3.10"]
+        tox-version: ["<4", ">=4.0.0b0"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: pdm-project/setup-pdm@main
         with:
@@ -28,7 +28,5 @@ jobs:
           if which tox4 > /dev/null
           then
             mv pdm.tox4.lock pdm.lock
-            tox4 -e py${pyversion/./}
-          else
-            tox -e py${pyversion/./}
           fi
+          tox -e py${pyversion/./}
