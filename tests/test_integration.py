@@ -2,10 +2,18 @@ import sys
 import textwrap
 
 import py
+import pytest
 from tox import __version__ as TOX_VERSION
 
 FIX_PROJECT = py.path.local(__file__).dirpath("fixture-project")
 IS_TOX_4 = TOX_VERSION[0] == "4"
+
+
+@pytest.fixture(autouse=True)
+def clean_env(monkeypatch):
+    monkeypatch.delenv("TOX_ENV_NAME", raising=False)
+    monkeypatch.delenv("TOX_WORK_DIR", raising=False)
+    monkeypatch.delenv("TOX_ENV_DIR", raising=False)
 
 
 def setup_project(tmpdir, tox_config):
