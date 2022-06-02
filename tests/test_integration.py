@@ -2,10 +2,18 @@ import sys
 import textwrap
 
 import py
+import pytest
 from tox import __version__ as TOX_VERSION
 
 FIX_PROJECT = py.path.local(__file__).dirpath("fixture-project")
 IS_TOX_4 = TOX_VERSION[0] == "4"
+
+
+@pytest.fixture(autouse=True)
+def clean_env(monkeypatch):
+    monkeypatch.delenv("TOX_ENV_NAME", raising=False)
+    monkeypatch.delenv("TOX_WORK_DIR", raising=False)
+    monkeypatch.delenv("TOX_ENV_DIR", raising=False)
 
 
 def setup_project(tmpdir, tox_config):
@@ -34,6 +42,7 @@ def test_install_conditional_deps(tmpdir):
         [tox]
         envlist = django{2,3}
         passenv = LD_PRELOAD
+        isolated_build = True
 
         [testenv]
         groups =
@@ -55,7 +64,7 @@ def test_install_conditional_deps(tmpdir):
                 raise RuntimeError(f"non-zero exit code: {e.code}")
 
     if TOX_VERSION[0] == "4":
-        package = tmpdir.join(".tox/4/.pkg/dist/demo-0.1.0.tar.gz")
+        package = tmpdir.join(".tox/.pkg/dist/demo-0.1.0.tar.gz")
     else:
-        package = tmpdir.join(".tox/.package/demo-0.1.0.tar.gz")
+        package = tmpdir.join(".tox/dist/demo-0.1.0.tar.gz")
     assert package.exists()
