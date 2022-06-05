@@ -26,3 +26,6 @@ build-backend = "pdm.pep517.api"
 
 [tool]
 [tool.pdm]
+[tool.pdm.scripts]
+lint = "flake8 demo.py"
+lint-shell = {shell = "flake8 demo.py"}

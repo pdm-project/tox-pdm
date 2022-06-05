@@ -31,13 +31,35 @@ path = "{}"
         )
 
 
-def test_install_conditional_deps(tmpdir):
+def execute_config(tmpdir, config: str):
+    __tracebackhide__ = True
     if IS_TOX_4:
-        from tox.run import main
+        from tox.run import run as main
     else:
         from tox.session import main
 
-    test_config = textwrap.dedent(
+    setup_project(tmpdir, textwrap.dedent(config))
+
+    code = -1
+    with tmpdir.as_cwd():
+        try:
+            main([])
+        except SystemExit as e:
+            print("e", e)
+            code = e.code
+    if code != 0:
+        pytest.fail(f"non-zero exit code: {code}")
+
+    if TOX_VERSION[0] == "4":
+        package = tmpdir.join(".tox/.pkg/dist/demo-0.1.0.tar.gz")
+    else:
+        package = tmpdir.join(".tox/dist/demo-0.1.0.tar.gz")
+    assert package.exists()
+
+
+def test_install_conditional_deps(tmpdir):
+    execute_config(
+        tmpdir,
         """
         [tox]
         envlist = django{2,3}
@@ -53,18 +75,37 @@ def test_install_conditional_deps(tmpdir):
         commands =
             django-admin --version
             flake8 --version
-        """
+        """,
     )
-    setup_project(tmpdir, test_config)
-    with tmpdir.as_cwd():
-        try:
-            main([])
-        except SystemExit as e:
-            if e.code != 0:
-                raise RuntimeError(f"non-zero exit code: {e.code}")
 
-    if TOX_VERSION[0] == "4":
-        package = tmpdir.join(".tox/.pkg/dist/demo-0.1.0.tar.gz")
-    else:
-        package = tmpdir.join(".tox/dist/demo-0.1.0.tar.gz")
-    assert package.exists()
+
+def test_use_pdm_scripts(tmpdir):
+    execute_config(
+        tmpdir,
+        """
+        [tox]
+        envlist = py3
+        passenv = LD_PRELOAD
+        isolated_build = True
+
+        [testenv]
+        groups = lint
+        commands = lint
+        """,
+    )
+
+
+def test_use_pdm_shell_scripts(tmpdir):
+    execute_config(
+        tmpdir,
+        """
+        [tox]
+        envlist = py3
+        passenv = LD_PRELOAD
+        isolated_build = True
+
+        [testenv]
+        groups = lint
+        commands = lint-shell
+        """,
+    )

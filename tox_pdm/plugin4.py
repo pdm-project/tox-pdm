@@ -2,15 +2,19 @@
 from __future__ import annotations
 
 import typing as t
+from pathlib import Path
 
 from tox.config.set_env import SetEnv
 from tox.execute.request import StdinSource
 from tox.plugin import impl
 from tox.tox_env.python.virtual_env.runner import VirtualEnvRunner
 
+from .utils import pdm_scripts
+
 if t.TYPE_CHECKING:
     from argparse import ArgumentParser
 
+    from tox.execute.api import Execute, Outcome
     from tox.tox_env.register import ToxEnvRegister
 
 
@@ -58,3 +62,17 @@ class PdmRunner(VirtualEnvRunner):
     @staticmethod
     def id() -> str:
         return "pdm"
+
+    def execute(
+        self,
+        cmd: t.Sequence[Path | str],
+        stdin: StdinSource,
+        show: bool | None = None,
+        cwd: Path | None = None,
+        run_id: str = "",
+        executor: Execute | None = None,
+    ) -> Outcome:
+        if scripts := pdm_scripts(self.core["tox_root"]):
+            if cmd[0] in scripts:
+                cmd = ["pdm", "run", *cmd]
+        return super().execute(cmd, stdin, show, cwd, run_id, executor)
