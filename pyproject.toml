@@ -29,7 +29,7 @@ pdm = "tox_pdm.plugin"
 [project.optional-dependencies]
 test = [
     "pytest>=6.2",
-    "coverage>=5.5",
+    "coverage[toml]>=5.5,<6.4",
 ]
 lint = [
     "flake8>=3.8",
@@ -42,6 +42,22 @@ build-backend = "pdm.pep517.api"
 [tool]
 [tool.pdm]
 version = {use_scm = true}
+
+[tool.pdm.scripts]
+test = "pytest -v tests/"
+
+[tool.pdm.scripts.lint]
+shell = """
+    flake8 tox_pdm
+    isort --check tox_pdm tests
+    black --check tox_pdm tests
+"""
+
+[tool.pdm.scripts.format]
+shell = """
+    isort tox_pdm tests
+    black tox_pdm tests
+"""
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::DeprecationWarning"]

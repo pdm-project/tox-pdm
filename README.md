@@ -46,6 +46,18 @@ commands =
     pytest test/
 ```
 
+Here is another one installing the `test` dependencies and executing the `test` PDM script
+
+```ini
+[tox]
+envlist = py3{8,9,10}
+isolated_build = True  ; This is required for a pyproject.toml based project.
+
+[testenv]
+groups = test
+commands = test
+```
+
 A real-world example can be found at this repository's [tox.ini](https://github.com/pdm-project/tox-pdm/blob/main/tox.ini) and
 [GitHub Action workflow](https://github.com/pdm-project/tox-pdm/blob/main/.github/workflows/ci.yml).
 
@@ -54,3 +66,4 @@ A real-world example can be found at this repository's [tox.ini](https://github.
 1. `pdm` executable must be exposed in `PATH`, if it is not the case, give the absolute path to tox by `tox --pdm <path_to_pdm>`.
 2. Make sure you have generated `pdm.lock` before running the test, it will greatly accelerate the testing.
 3. If you don't set `skip_install = true`, the current package will be built and installed into the testing environment together with the `dependencies` from `pyproject.toml`.
+4. Reuse your PDM scripts to avoid duplication

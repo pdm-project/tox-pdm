@@ -1,10 +1,20 @@
 """Plugin specification for Tox 3"""
+import os
 from typing import Any
 
 from tox import action, config, hookimpl
 from tox.venv import VirtualEnv
 
-from tox_pdm.utils import setup_env
+from .utils import pdm_scripts
+
+
+def setup_env() -> None:
+    os.environ.update({"PDM_IGNORE_SAVED_PYTHON": "1", "PDM_USE_VENV": "1"})
+    old_passenv = os.getenv("TOX_TESTENV_PASSENV")
+    new_env = ["PDM_*"]
+    if old_passenv:
+        new_env.append(old_passenv)
+    os.environ["TOX_TESTENV_PASSENV"] = " ".join(new_env)
 
 
 @hookimpl
@@ -14,6 +24,17 @@ def tox_addoption(parser: config.Parser) -> Any:
     )
     setup_env()
     parser.add_argument("--pdm", default="pdm", help="The executable path of PDM")
+
+
+@hookimpl
+def tox_configure(config: config.Config):
+    scripts = pdm_scripts(config.toxinidir)
+    if scripts:
+        for cfg in config.envconfigs.values():
+            cfg.allowlist_externals.append("pdm")
+            for lineno, cmd in enumerate(cfg.commands):
+                if cmd[0] in scripts:
+                    cfg.commands[lineno] = ["pdm", "run", *cmd]
 
 
 @hookimpl
