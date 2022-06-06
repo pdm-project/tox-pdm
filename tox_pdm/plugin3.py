@@ -28,7 +28,8 @@ def tox_addoption(parser: config.Parser) -> Any:
 
 @hookimpl
 def tox_configure(config: config.Config):
-    if scripts := pdm_scripts(config.toxinidir):
+    scripts = pdm_scripts(config.toxinidir)
+    if scripts:
         for cfg in config.envconfigs.values():
             cfg.allowlist_externals.append("pdm")
             for lineno, cmd in enumerate(cfg.commands):

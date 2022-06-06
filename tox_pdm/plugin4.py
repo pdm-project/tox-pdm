@@ -72,7 +72,8 @@ class PdmRunner(VirtualEnvRunner):
         run_id: str = "",
         executor: Execute | None = None,
     ) -> Outcome:
-        if scripts := pdm_scripts(self.core["tox_root"]):
+        scripts = pdm_scripts(self.core["tox_root"])
+        if scripts:
             if cmd[0] in scripts:
                 cmd = ["pdm", "run", *cmd]
         return super().execute(cmd, stdin, show, cwd, run_id, executor)
