@@ -34,7 +34,8 @@ class PdmRunner(VirtualEnvRunner):
         super()._setup_env()
         groups = self.conf["groups"]
         pdm = self.options.pdm
-        cmd = [pdm, "install", "--no-self"]
+        op = "sync" if self.conf["pdm_sync"] else "install"
+        cmd = [pdm, op, "--no-self"]
         for group in groups:
             cmd.extend(("--group", group))
         if pdm not in self.conf["allowlist_externals"]:
@@ -57,6 +58,12 @@ class PdmRunner(VirtualEnvRunner):
             of_type=t.List[str],
             default=[],
             desc="Specify the dependency groups to install",
+        )
+        self.conf.add_config(
+            "pdm_sync",
+            of_type=bool,
+            default=True,
+            desc="Disable to use 'pdm install' instead of 'pdm sync'.",
         )
 
     @staticmethod

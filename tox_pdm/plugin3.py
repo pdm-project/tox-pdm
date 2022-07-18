@@ -22,6 +22,9 @@ def tox_addoption(parser: config.Parser) -> Any:
     parser.add_testenv_attribute(
         "groups", "line-list", "Specify the dependency groups to install"
     )
+    parser.add_testenv_attribute(
+        "pdm_sync", "bool", "Disable to use 'pdm install' instead of 'pdm sync'.", True
+    )
     setup_env()
     parser.add_argument("--pdm", default="pdm", help="The executable path of PDM")
 
@@ -40,9 +43,10 @@ def tox_configure(config: config.Config):
 @hookimpl
 def tox_testenv_install_deps(venv: VirtualEnv, action: action.Action) -> Any:
     groups = venv.envconfig.groups or []
+    op = "sync" if venv.envconfig.pdm_sync else "install"
     if not venv.envconfig.skip_install or groups:
         action.setactivity("pdminstall", groups)
-        args = [venv.envconfig.config.option.pdm, "install"]
+        args = [venv.envconfig.config.option.pdm, op]
         if "default" in groups:
             groups.remove("default")
         elif venv.envconfig.skip_install:
