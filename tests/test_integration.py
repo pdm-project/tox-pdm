@@ -109,3 +109,20 @@ def test_use_pdm_shell_scripts(tmpdir):
         commands = lint-shell
         """,
     )
+
+
+def test_pdm_install_not_sync(tmpdir):
+    execute_config(
+        tmpdir,
+        """
+        [tox]
+        envlist = py3
+        passenv = LD_PRELOAD
+        isolated_build = True
+
+        [testenv]
+        groups = lint
+        pdm_sync = False
+        commands = flake8 --version
+        """,
+    )
