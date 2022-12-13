@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9, "3.10"]
+        python-version: [3.7, 3.8, 3.9, "3.10", "3.11"]
         tox-version: [3, 4]
 
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: pdm-project/setup-pdm@main
+        uses: pdm-project/setup-pdm@v3
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -27,7 +27,7 @@ jobs:
           tox --version
           pyversion="${{ matrix.python-version }}"
           toxversion="${{ matrix.tox-version }}"
-          if [[ $toxversion == "4" ]]; then
-            mv pdm.tox4.lock pdm.lock;
+          if [[ $toxversion == "3" ]]; then
+            mv pdm.tox3.lock pdm.lock;
           fi
           tox -e py${pyversion/./}-tox${toxversion}
