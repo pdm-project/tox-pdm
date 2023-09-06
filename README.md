@@ -6,7 +6,7 @@ A plugin for tox that utilizes PDM as the package manager and installer.
 [![PyPI](https://img.shields.io/pypi/v/tox-pdm?logo=python&logoColor=%23cccccc)](https://pypi.org/project/tox-pdm)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![Tox Versions](https://img.shields.io/badge/tox-v3%20%7C%20v4-yellowgreen)
+![Tox Versions](https://img.shields.io/badge/tox-v4-yellowgreen)
 
 With this plugin, you can migrate your project to PDM while retaining the ability to test against multiple versions.
 
