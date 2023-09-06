@@ -5,7 +5,7 @@ authors = [
     {name = "Frost Ming", email = "me@frostming.com"},
 ]
 dependencies = [
-    "tox>=3.18.0",
+    "tox>=4.0",
     "tomli; python_version<'3.11'",
 ]
 requires-python = ">=3.7"
@@ -42,8 +42,8 @@ lint = [
 ]
 
 [build-system]
-requires = ["pdm-pep517"]
-build-backend = "pdm.pep517.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [tool.pdm.version]
 source = "scm"

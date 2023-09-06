@@ -1,7 +1,7 @@
 __pypackages__/
 __pycache__/
 *.py[cod]
-.pdm.toml
+.pdm-python
 *.egg-info/
 dist/
 build/
