@@ -34,8 +34,8 @@ The following simple example installs `dev` and `test` dependencies into the ven
 
 ```ini
 [tox]
+min_version = 4.0
 envlist = py37,py38
-isolated_build = True  ; This is required for a pyproject.toml based project.
 
 [testenv]
 groups =  ; Dependency groups in pyproject.toml
@@ -51,8 +51,8 @@ Here is another one installing the `test` dependencies and executing the `test` 
 
 ```ini
 [tox]
+min_version = 4.0
 envlist = py3{8,9,10}
-isolated_build = True  ; This is required for a pyproject.toml based project.
 
 [testenv]
 groups = test
