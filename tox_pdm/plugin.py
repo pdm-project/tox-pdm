@@ -39,16 +39,16 @@ def tox_register_tox_env(register: ToxEnvRegister) -> t.Optional[bool]:
 class PdmRunner(VirtualEnvRunner):
     def _setup_env(self) -> None:
         super()._setup_env()
+        pdm = self.options.pdm
+        if pdm not in self.conf["allowlist_externals"]:
+            self.conf["allowlist_externals"].append(pdm)
         if self.conf["skip_install"]:
             return
         groups = self.conf["groups"]
-        pdm = self.options.pdm
         op = "sync" if self.conf["pdm_sync"] else "install"
         cmd = [pdm, op, "--no-self"]
         for group in groups:
             cmd.extend(("--group", group))
-        if pdm not in self.conf["allowlist_externals"]:
-            self.conf["allowlist_externals"].append(pdm)
         set_env: SetEnv = self.conf["setenv"]
         if "VIRTUAL_ENV" not in set_env:
             set_env.update({"VIRTUAL_ENV": str(self.env_dir)})
