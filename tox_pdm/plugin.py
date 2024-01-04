@@ -39,6 +39,8 @@ def tox_register_tox_env(register: ToxEnvRegister) -> t.Optional[bool]:
 class PdmRunner(VirtualEnvRunner):
     def _setup_env(self) -> None:
         super()._setup_env()
+        if self.conf["skip_install"]:
+            return
         groups = self.conf["groups"]
         pdm = self.options.pdm
         op = "sync" if self.conf["pdm_sync"] else "install"
