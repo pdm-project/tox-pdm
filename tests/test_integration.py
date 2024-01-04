@@ -61,8 +61,8 @@ def test_install_conditional_deps(tmpdir):
         groups =
             lint
         deps =
-            django2: Django~=3.0
-            django3: Django~=4.0
+            django3: Django~=3.0
+            django4: Django~=4.0
         commands =
             django-admin --version
             flake8 --version
