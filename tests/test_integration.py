@@ -24,7 +24,9 @@ def setup_project(tmpdir, tox_config):
         f.write(
             """[python]
 path = "{}"
-""".format(sys.executable.replace("\\", "/"))
+""".format(
+                sys.executable.replace("\\", "/")
+            )
         )
 
 
