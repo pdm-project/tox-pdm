@@ -42,11 +42,11 @@ class PdmRunner(VirtualEnvRunner):
         pdm = self.options.pdm
         if pdm not in self.conf["allowlist_externals"]:
             self.conf["allowlist_externals"].append(pdm)
-        if self.conf["skip_install"]:
-            return
         groups = self.conf["groups"]
         op = "sync" if self.conf["pdm_sync"] else "install"
         cmd = [pdm, op, "--no-self"]
+        if not groups:
+            return
         for group in groups:
             cmd.extend(("--group", group))
         set_env: SetEnv = self.conf["setenv"]
