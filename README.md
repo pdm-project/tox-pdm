@@ -59,6 +59,8 @@ groups = test
 commands = test
 ```
 
+If you want to skip the pdm install for some environments, you can set `skip_install = true` in the environment config.
+
 A real-world example can be found at this repository's [tox.ini](https://github.com/pdm-project/tox-pdm/blob/main/tox.ini) and
 [GitHub Action workflow](https://github.com/pdm-project/tox-pdm/blob/main/.github/workflows/ci.yml).
 
