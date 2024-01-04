@@ -9,16 +9,11 @@ dependencies = [
     "requests~=2.25",
 ]
 requires-python = ">=3.6"
-dynamic = ["classifiers"]
 license = {text = "MIT"}
-
-[project.urls]
-homepage = ""
-
 
 [project.optional-dependencies]
 lint = [
-    "flake8~=3.8",
+    "flake8>=4",
 ]
 [build-system]
 requires = ["pdm-pep517"]
