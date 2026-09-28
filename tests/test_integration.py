@@ -21,13 +21,9 @@ def setup_project(tmpdir, tox_config):
     with tmpdir.join("tox.ini").open("w", ensure=True) as f:
         f.write(tox_config)
     with tmpdir.join(".pdm.toml").open("w", ensure=True) as f:
-        f.write(
-            """[python]
+        f.write("""[python]
 path = "{}"
-""".format(
-                sys.executable.replace("\\", "/")
-            )
-        )
+""".format(sys.executable.replace("\\", "/")))
 
 
 def execute_config(tmpdir, config: str):
